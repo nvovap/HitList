@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
-    var names = [String]()
+    //var names = [String]()
+    var people = [NSManagedObject]()
     
     
     override func viewDidLoad() {
@@ -32,7 +34,20 @@ class ViewController: UIViewController {
         
         let saveAction = UIAlertAction(title: "Save", style: .default, handler: {(action: UIAlertAction) -> Void in
             let textField = alert.textFields?.first
-            self.names.append(textField!.text!)
+            
+            
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
+            let managerObject = appDelegate.persistentContainer.viewContext
+            
+            
+            //let person = NSEntityDescription.entity(forEntityName: "Person", in: managerObject)
+            
+            let person = NSEntityDescription.insertNewObject(forEntityName: "Person", into: managerObject)
+            
+            person.setValue(textField!.text!, forKey: "name")
+            
+            self.people.append(person)
             self.tableView.reloadData()
             
         })
@@ -57,13 +72,15 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return names.count
+        return people.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
-        cell.textLabel?.text = names[indexPath.row]
+        let person = people[indexPath.row]
+        
+        cell.textLabel?.text = person.value(forKey: "name") as? String
         
         return cell
 
