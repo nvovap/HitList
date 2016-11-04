@@ -50,6 +50,14 @@ class ViewController: UIViewController {
             self.people.append(person)
             self.tableView.reloadData()
             
+            do {
+                try managerObject.save()
+            } catch let error as NSError {
+                print("Could not save \(error.localizedDescription), \(error.userInfo)")
+            }
+            
+            
+            
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {(UIAlertAction) -> Void in
@@ -60,8 +68,9 @@ class ViewController: UIViewController {
             
         }
         
-        alert.addAction(saveAction)
+        
         alert.addAction(cancelAction)
+        alert.addAction(saveAction)
         
         present(alert, animated: true, completion: nil)
         
