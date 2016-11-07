@@ -107,6 +107,11 @@ class ViewController: UIViewController {
 
 
 extension ViewController: UITableViewDataSource {
+    
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 1
+//    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return people.count
     }
@@ -121,4 +126,35 @@ extension ViewController: UITableViewDataSource {
         return cell
 
     }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
+            let managerContext = appDelegate.persistentContainer.viewContext
+            
+            let person = people[indexPath.row]
+            
+            
+            managerContext.delete(person)
+            
+            
+            people.remove(at: indexPath.row)
+            
+            do {
+                try managerContext.save()
+            } catch let error {
+                print("Could not save: \(error)")
+            }
+            
+            
+            
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
 }
