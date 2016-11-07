@@ -14,7 +14,32 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     //var names = [String]()
-    var people = [NSManagedObject]()
+    var people = [Person]()
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let managerContext = appDelegate.persistentContainer.viewContext
+        
+        let featchRequest = NSFetchRequest<Person>(entityName: "Person")
+        
+        do {
+            let person = try managerContext.fetch(featchRequest)
+            
+           // if let person = person {
+                people = person
+          //  }
+            
+        } catch let error as NSError {
+            print("Could not featch \(error), \(error.userInfo)")
+        }
+
+        
+        
+    }
     
     
     override func viewDidLoad() {
@@ -43,9 +68,11 @@ class ViewController: UIViewController {
             
             //let person = NSEntityDescription.entity(forEntityName: "Person", in: managerObject)
             
-            let person = NSEntityDescription.insertNewObject(forEntityName: "Person", into: managerObject)
+            let person = NSEntityDescription.insertNewObject(forEntityName: "Person", into: managerObject) as! Person
             
-            person.setValue(textField!.text!, forKey: "name")
+            //person.setValue(textField!.text!, forKey: "name")
+            
+            person.name = textField!.text
             
             self.people.append(person)
             self.tableView.reloadData()
@@ -89,7 +116,7 @@ extension ViewController: UITableViewDataSource {
         
         let person = people[indexPath.row]
         
-        cell.textLabel?.text = person.value(forKey: "name") as? String
+        cell.textLabel?.text = person.name
         
         return cell
 
